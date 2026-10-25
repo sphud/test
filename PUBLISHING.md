@@ -28,3 +28,23 @@ A custom domain does not guarantee access through a school’s filter. The schoo
 ## GitHub Pages alternative
 
 In repository Settings → Pages, select **Deploy from a branch**, branch `main`, folder `/docs`. The default URL is `https://sphud.github.io/test/`. Relative project links and local assets work under that prefix.
+
+## Permanent redirect to upnoah.com
+
+The live custom domain is `https://upnoah.com/`. Import `cloudflare/wageo-to-upnoah.csv` into an account-level Cloudflare **Bulk Redirect List**, then create and deploy a **Bulk Redirect Rule** using that list. Importing a list alone does not activate the redirect.
+
+- Source: `wageo.pages.dev/` (no wildcard; matches HTTP and HTTPS).
+- Target: `https://upnoah.com/`.
+- Status: **301**.
+- Preserve query string: **On**.
+- Include subdomains: **Off**, preserving separate preview deployment hostnames.
+- Subpath matching: **On**.
+- Preserve path suffix: **On**.
+
+The CSV has no header and uses Cloudflare's documented column order: source, target, status, preserve query string, include subdomains, subpath matching, preserve path suffix.
+
+Example: `https://wageo.pages.dev/projects/washington-geology/?ref=old` should respond with HTTP 301 and `Location: https://upnoah.com/projects/washington-geology/?ref=old`. Verify the main address and the project path after deploying the rule. The rule does not match `upnoah.com`, preventing a redirect loop.
+
+Do not add a blanket redirect in `docs/_redirects`: those path-only rules also apply to the custom domain. No browser-side redirect is installed.
+
+Official instructions: https://developers.cloudflare.com/pages/how-to/redirect-to-custom-domain/
